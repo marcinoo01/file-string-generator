@@ -32,9 +32,6 @@ public class PayloadServiceImpl implements PayloadService {
 
     @Override
     public Mono<PayloadPostReferenceDTO> run(PayloadDTO payloadDTO) {
-        if (payloadDTO == null) {
-            throw new IllegalArgumentException();
-        }
         final Payload payload = payloadMapper.toPayload(payloadDTO);
         if (payload.getMaxSize() < payload.getMinSize()) {
             throw new InvalidParameterException("Provided min and max size is not possible to proceed");
@@ -51,10 +48,11 @@ public class PayloadServiceImpl implements PayloadService {
         return payloadRepository
                 .save(payload)
                 .flatMap(payload1 -> {
-                    final List<String> currString = stringGenerationService.generatePossibleStrings(new StringGeneration(payload1));
-                    currString.forEach(s -> writeToFile(randomFile, s));
-                    return payloadRepository.save(payload).map(payloadMapper::toPayloadPostReferenceDTO);
-                });
+                            final List<String> currString = stringGenerationService.generatePossibleStrings(new StringGeneration(payload1));
+                            currString.forEach(s -> writeToFile(randomFile, s));
+                            return payloadRepository.save(payload1).map(payloadMapper::toPayloadPostReferenceDTO);
+                        }
+                );
     }
 
     @Override
@@ -82,7 +80,7 @@ public class PayloadServiceImpl implements PayloadService {
 
     private void writeToFile(Path path, String stringToWrite) {
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
-            bufferedWriter.write(stringToWrite + "\n");
+            bufferedWriter.write("\"" + stringToWrite + "\"," + "\n");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

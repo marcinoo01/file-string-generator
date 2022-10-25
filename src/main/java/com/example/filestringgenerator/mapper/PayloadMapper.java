@@ -15,6 +15,7 @@ public interface PayloadMapper {
     @Mapping(source = "amountOfStrings", target = "amountOfStrings")
     Payload toPayload(PayloadDTO payloadDTO);
 
+    @Mapping(source = "id", target = "id")
     @Mapping(source = "minSize", target = "minSize")
     @Mapping(source = "maxSize", target = "maxSize")
     @Mapping(source = "characters", target = "characters")

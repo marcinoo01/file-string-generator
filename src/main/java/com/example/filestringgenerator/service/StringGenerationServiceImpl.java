@@ -15,6 +15,9 @@ public class StringGenerationServiceImpl implements StringGenerationService {
     @Override
     public List<String> generatePossibleStrings(StringGeneration stringGeneration) {
         final Payload payload = stringGeneration.getPayload();
+        if (payload.getMinSize() > payload.getMaxSize() || payload.getMinSize() < 0 || payload.getMaxSize() < 0) {
+            throw new IllegalArgumentException("Provided payload is not valid");
+        }
         payload.setState(State.RUNNING);
         for (int i = payload.getMinSize(); i < payload.getMaxSize() + 1; i++) {
             allCombinations("", stringGeneration, i);
